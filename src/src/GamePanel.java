@@ -3,10 +3,14 @@ package src;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
 import javax.swing.JPanel;
 
 /**
  * INITIAL VERSION 
+ * GamePanel acts as a fixed size white canvas, embedded inside a JFrame in 
+ * applications or inside JApplets in applets. 
  * 
  * @author Alberto Fernandez Saucedo
  */
@@ -24,6 +28,10 @@ public class GamePanel extends JPanel implements Runnable
     
     // for game termination
     private volatile boolean gameOver = false;
+            
+    // global variables for off-screen rendering
+    private Graphics dbg;
+    private Image dbImage;
     
     public GamePanel()
     {
@@ -86,9 +94,48 @@ public class GamePanel extends JPanel implements Runnable
         }
     }//end gameUpdate
     
+    // draws the current frame to an image buffer
     private void gameRender()
     {
-        // stub
-    }
+        // create the buffer
+        if(dbImage == null)
+        {
+            dbImage = createImage(WIDTH, HEIGHT);
+        }
+        if(dbImage == null)
+        {
+            System.out.println("dbImage is null");
+            return;
+        }
+        else
+        {
+            dbg = dbImage.getGraphics();
+        }
+        
+        // clear the background
+        dbg.setColor(Color.white);
+        dbg.fillRect(0, 0, WIDTH, HEIGHT);
+        
+        // draw game elements
+        // ...
+        
+        if(gameOver)
+            gameOverMessage(dbg);
+    }//end gameRender
+    
+    private void gameOverMessage(Graphics g)
+    {
+        // center the game-over message
+        String msg = "";
+        int x = 0, y = 0;
+        g.drawString(msg, x, y);
+    }// end gameOverMessage
+    
+    public void paintComponent(Graphics g)
+    {
+        super.paintComponent(g);
+        if(dbImage != null)
+            g.drawImage(dbImage, 0, 0, null);
+    }//end paintComponent
     
 }//end GamePanel
