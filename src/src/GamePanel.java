@@ -38,6 +38,8 @@ public class GamePanel extends JPanel implements Runnable
     private Graphics dbg;
     private Image dbImage;
     
+    
+    
     public GamePanel()
     {
         setBackground(Color.white);
@@ -106,9 +108,19 @@ public class GamePanel extends JPanel implements Runnable
         running = false;
     }//end stopGame
     
+    // Repeatedly: update, render, sleep so loop takes close to period nsecs.
+    // Sleep inaccuracies are handled. The timing calculation use the Java 3D
+    // timer.
     @Override
     public void run() 
     {
+        
+        
+        long beforeTime, timeDiff, sleepTime;
+        int period = 10;
+        
+        beforeTime = System.currentTimeMillis();
+        
         running = true;
         while(running)
         {
@@ -119,6 +131,12 @@ public class GamePanel extends JPanel implements Runnable
             // draw buffer to screen
             paintScreen();
             
+            timeDiff = System.currentTimeMillis() - beforeTime;
+            sleepTime = period - timeDiff;
+            
+            if(sleepTime <= 0)
+                sleepTime = 5;
+            
             try
             {
                 Thread.sleep(20); // sleep a bit
@@ -126,6 +144,8 @@ public class GamePanel extends JPanel implements Runnable
             catch(InterruptedException ie){
                 System.exit(0);
             }//end try-catch
+            
+            beforeTime = System.currentTimeMillis();
         }//end while
     }//end run
     
